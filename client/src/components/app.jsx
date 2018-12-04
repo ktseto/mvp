@@ -161,17 +161,3 @@ class App extends React.Component {
 }
 
 export default App;
-
-/*
-    this.state = {
-      itineraries: [{
-        name: '',
-        waypoints: [{
-          id: '',
-          name: '',
-          direction: '',
-          arrivalTimes: [],
-        }],
-      }],
-    };
-*/
