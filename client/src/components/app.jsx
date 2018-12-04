@@ -65,6 +65,13 @@ class App extends React.Component {
   }
 
   handleDeleteWaypoint(e) {
+    const [itinId, stopId] = e.target.id.split('/');
+    axios.delete(`/waypoint/${itinId}/${stopId}`)
+      .then((res) => {
+        this.setState({
+          itineraries: res.data,
+        });
+      });
   }
 
   render() {
@@ -102,14 +109,14 @@ class App extends React.Component {
             <div key={itin._id}>
               <div className={styles.flexContainer}>
                 <div className={styles.itinHeader}>Itinerary:  {itin.name}</div>
-                <button className={styles.itinHeader} id={itin._id}>X</button>
+                <button className={styles.itinHeader} id={itin._id} onClick={this.handleDeleteItin}>X</button>
               </div>
               {itin.waypoints.map(wp => (
                 <div className={styles.waypoint} key={wp.id}>
                   <div className={styles.line}>{wp.line}</div>
                   <div className={styles.direction}>{directionMap[wp.direction]}</div>
                   <div className={styles.stopName}>{wp.name}</div>
-                  <button id={`${itin._id}/${wp.id}`}>X</button>
+                  <button id={`${itin._id}/${wp.id}`} onClick={this.handleDeleteWaypoint}>X</button>
                 </div>
               ))}
               <NewWaypoint itinId={itin._id} handleAddWaypoint={this.handleAddWaypoint} />

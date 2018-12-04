@@ -108,11 +108,27 @@ app.get('/stops/:line/:dirId', (req, res) => {
 });
 
 app.post('/waypoint/:itinId', (req, res) => {
+  //.update() doesn't accept docs in the callback
   Itinerary.findOneAndUpdate({ _id: new ObjectId(req.params.itinId) }, {
     $push: { waypoints: req.body },
   }, (err, docs) => {
     if (err) console.error(err);
     console.log('Added new waypoint.');
+
+    Itinerary.find({}, (err, itinsRaw) => {
+      if (err) console.error(err);
+      res.send(itinsRaw);
+    });
+  });
+});
+
+
+app.delete('/waypoint/:itinId/:stopId', (req, res) => {
+  Itinerary.findOneAndUpdate({ _id: new ObjectId(req.params.itinId) }, {
+    $pull: { waypoints: { id: req.params.stopId } },
+  }, (err, docs) => {
+    if (err) console.error(err);
+    console.log('Waypoint deleted.');
 
     Itinerary.find({}, (err, itinsRaw) => {
       if (err) console.error(err);
