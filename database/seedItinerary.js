@@ -6,7 +6,7 @@ Itinerary.create({
     id: '14852',
     name: 'Lawton St \u0026 7th Ave',
     line: '44',
-    direction: 'OB',
+    direction: 'Inbound',
   }],
 }, (err, docs) => {
   if (err) console.error(err);

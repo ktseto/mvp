@@ -20,6 +20,7 @@
   "homepage": "https://github.com/ktseto/hrsf104-mvp#readme",
   "dependencies": {
     "axios": "^0.18.0",
+    "bluebird": "^3.5.3",
     "express": "^4.16.4",
     "mongoose": "^5.3.14",
     "react": "^16.6.3",

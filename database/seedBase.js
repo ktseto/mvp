@@ -1,9 +1,9 @@
 const axios = require('axios');
 const { Line, Direction, Pattern } = require('./Transit.js');
-const config = require('./config.js');
+const { API_TOKEN } = require('./config.js');
 
 // Line, Direction, Pattern };
-const linesUri = `http://api.511.org/transit/lines?format=json&api_key=${config.API_TOKEN}&operator_id=SF`;
+const linesUri = `http://api.511.org/transit/lines?format=json&api_key=${API_TOKEN}&operator_id=SF`;
 
 // request returns a body whose encoding could not be determined
 // the first character is BOM
@@ -15,41 +15,41 @@ const linesUri = `http://api.511.org/transit/lines?format=json&api_key=${config.
 //     });
 //   });
 
-Direction.insertMany([
-  { DirectionId: 'IB', Name: 'Inbound' },
-  { DirectionId: 'OB', Name: 'Outbound' },
-], (err, docs) => {
-  if (err) console.error(err);
-  console.log(`${docs.length} directions inserted.`);
-});
+// Direction.insertMany([
+//   { DirectionId: 'IB', Name: 'Inbound' },
+//   { DirectionId: 'OB', Name: 'Outbound' },
+// ], (err, docs) => {
+//   if (err) console.error(err);
+//   console.log(`${docs.length} directions inserted.`);
+// });
 
-Line.distinct('Id', (err, lineIds) => {
-  if (err) console.error(err);
+// Line.distinct('Id', (err, lineIds) => {
+//   if (err) console.error(err);
 
-  // limiting //////////////////////////////////////////////
-  // lineIds.forEach((line) => {
-  ['43', 'L'].forEach((line) => {
-    axios.get(`http://api.511.org/transit/patterns?format=json&api_key=${config.API_TOKEN}&operator_id=SF&line_id=${line}`)
-      .then((res) => {
-        JSON.parse(res.data.slice(1)).journeyPatterns.forEach((pattern) => {
-          const { serviceJourneyPatternRef, LineRef, DirectionRef, PointsInSequence } = pattern;
+//   // limiting //////////////////////////////////////////////
+//   // lineIds.forEach((line) => {
+//   ['43', 44', 'K', 'L', M', 'N'].forEach((line) => {
+//     axios.get(`http://api.511.org/transit/patterns?format=json&api_key=${config.API_TOKEN}&operator_id=SF&line_id=${line}`)
+//       .then((res) => {
+//         JSON.parse(res.data.slice(1)).journeyPatterns.forEach((pattern) => {
+//           const { serviceJourneyPatternRef, LineRef, DirectionRef, PointsInSequence } = pattern;
 
-          const data = {
-            serviceJourneyPatternRef,
-            LineRef,
-            DirectionRef,
-            StopPointInJourneyPattern: PointsInSequence.StopPointInJourneyPattern,
-          };
+//           const data = {
+//             serviceJourneyPatternRef,
+//             LineRef,
+//             DirectionRef,
+//             StopPointInJourneyPattern: PointsInSequence.StopPointInJourneyPattern,
+//           };
 
-          Pattern.create(data, (err, docs) => {
-            if (err) console.error(err);
-            console.log('docs: ', docs);
-            console.log(`Pattern inserted: ${serviceJourneyPatternRef}, ${LineRef}, ${DirectionRef}`);
-          });
-        });
-      });
-  });
-});
+//           Pattern.create(data, (err, docs) => {
+//             if (err) console.error(err);
+//             console.log('docs: ', docs);
+//             console.log(`Pattern inserted: ${serviceJourneyPatternRef}, ${LineRef}, ${DirectionRef}`);
+//           });
+//         });
+//       });
+//   });
+// });
 
 
 /*
