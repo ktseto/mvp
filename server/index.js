@@ -130,8 +130,19 @@ app.delete('/waypoint/:itinId/:stopId', (req, res) => {
     if (err) console.error(err);
     console.log('Waypoint deleted.');
 
-    Itinerary.find({}, (err, itinsRaw) => {
-      if (err) console.error(err);
+    Itinerary.find({}, (err2, itinsRaw) => {
+      if (err) console.error(err2);
+      res.send(itinsRaw);
+    });
+  });
+});
+
+app.delete('/itinerary/:itinId', (req, res) => {
+  Itinerary.deleteOne({ _id: new ObjectId(req.params.itinId) }, (err) => {
+    if (err) console.error(err);
+
+    Itinerary.find({}, (err2, itinsRaw) => {
+      if (err) console.error(err2);
       res.send(itinsRaw);
     });
   });
@@ -140,10 +151,6 @@ app.delete('/waypoint/:itinId/:stopId', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}.`);
 });
-
-
-
-
 
     // stopIds.forEach((id) => {
     //   axios.get(`http://api.511.org/transit/StopMonitoring?format=json&api_key=${API_TOKEN}&agency=SF&stopCode=${id}`)

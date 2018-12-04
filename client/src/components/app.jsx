@@ -57,11 +57,15 @@ class App extends React.Component {
     this.setState({
       itineraries: newItin,
     });
-    // const newItineraries = this.state.itineraries.filter(it => it._id !== newItin._id);
-    // delete newItineraries
   }
 
   handleDeleteItin(e) {
+    axios.delete(`/itinerary/${e.target.id}`)
+      .then((res) => {
+        this.setState({
+          itineraries: res.data,
+        });
+      });
   }
 
   handleDeleteWaypoint(e) {
