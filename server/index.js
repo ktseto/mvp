@@ -108,11 +108,16 @@ app.get('/stops/:line/:dirId', (req, res) => {
 });
 
 app.post('/waypoint/:itinId', (req, res) => {
-  Itinerary.update({ _id: new ObjectId(req.params.itinId) }, {
+  Itinerary.findOneAndUpdate({ _id: new ObjectId(req.params.itinId) }, {
     $push: { waypoints: req.body },
-  }, (err) => {
+  }, (err, docs) => {
     if (err) console.error(err);
     console.log('Added new waypoint.');
+
+    Itinerary.find({}, (err, itinsRaw) => {
+      if (err) console.error(err);
+      res.send(itinsRaw);
+    });
   });
 });
 

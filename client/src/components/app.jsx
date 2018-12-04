@@ -18,14 +18,16 @@ class App extends React.Component {
       onHomePage: true,
     };
 
-    this.handleTogglePage = this.handleTogglePage.bind(this);
+    this.handleEditPage = this.handleEditPage.bind(this);
+    this.handleBackHome = this.handleBackHome.bind(this);
     this.handleDeleteItin = this.handleDeleteItin.bind(this);
     this.handleDeleteWaypoint = this.handleDeleteWaypoint.bind(this);
+    this.handleAddWaypoint = this.handleAddWaypoint.bind(this);
   }
 
-  componentDidMount() {
-    axios.get('/realtime')
-    // axios.get('/test')
+  refreshData() {
+    // axios.get('/realtime')
+    axios.get('/test')
       .then((res) => {
         this.setState({
           itineraries: res.data,
@@ -33,12 +35,30 @@ class App extends React.Component {
       });
   }
 
-  handleTogglePage() {
-    const { onHomePage } = this.state;
+  componentDidMount() {
+    this.refreshData();
+  }
 
+  handleEditPage() {
     this.setState({
-      onHomePage: !onHomePage,
+      onHomePage: false,
     });
+  }
+
+  handleBackHome() {
+    this.setState({
+      onHomePage: true,
+    }, () => {
+      this.refreshData();
+    });
+  }
+
+  handleAddWaypoint(newItin) {
+    this.setState({
+      itineraries: newItin,
+    });
+    // const newItineraries = this.state.itineraries.filter(it => it._id !== newItin._id);
+    // delete newItineraries
   }
 
   handleDeleteItin(e) {
@@ -56,7 +76,7 @@ class App extends React.Component {
         <div id="realTime">
           <div className={styles.appHeader}>Best Transit App Ever</div>
           <div className={styles.editButtonContainer}>
-            <button onClick={this.handleTogglePage}>Edit Itineraries</button>
+            <button onClick={this.handleEditPage}>Edit Itineraries</button>
           </div>
           {this.state.itineraries.map(itin => (
             <div key={itin._id}>
@@ -92,14 +112,14 @@ class App extends React.Component {
                   <button id={`${itin._id}/${wp.id}`}>X</button>
                 </div>
               ))}
-              <NewWaypoint itinId={itin._id}/>
+              <NewWaypoint itinId={itin._id} handleAddWaypoint={this.handleAddWaypoint} />
             </div>
           ))}
           <div>
             New Itinerary:  <input></input>
             <button id="addItin">Add</button>
           </div>
-          <button id="return" onClick={this.handleTogglePage}>Return</button>
+          <button id="return" onClick={this.handleBackHome}>Return</button>
         </div>
       }
       </div>
