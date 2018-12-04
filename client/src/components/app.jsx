@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import NewWaypoint from './newWaypoint.jsx';
+import styles from '../../dist/styles/app.css';
 
 class App extends React.Component {
   constructor(props) {

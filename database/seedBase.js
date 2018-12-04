@@ -23,13 +23,15 @@ const linesUri = `http://api.511.org/transit/lines?format=json&api_key=${API_TOK
 //   console.log(`${docs.length} directions inserted.`);
 // });
 
+//['43', 44', 'K', 'L', M', 'N']
+//['1','10','12','14','14R','14X','18','19','1AX','1BX']
 // Line.distinct('Id', (err, lineIds) => {
 //   if (err) console.error(err);
 
 //   // limiting //////////////////////////////////////////////
 //   // lineIds.forEach((line) => {
-//   ['43', 44', 'K', 'L', M', 'N'].forEach((line) => {
-//     axios.get(`http://api.511.org/transit/patterns?format=json&api_key=${config.API_TOKEN}&operator_id=SF&line_id=${line}`)
+//     ['1','10','12','14','14R','14X','18','19','1AX','1BX'].forEach((line) => {
+//     axios.get(`http://api.511.org/transit/patterns?format=json&api_key=${API_TOKEN}&operator_id=SF&line_id=${line}`)
 //       .then((res) => {
 //         JSON.parse(res.data.slice(1)).journeyPatterns.forEach((pattern) => {
 //           const { serviceJourneyPatternRef, LineRef, DirectionRef, PointsInSequence } = pattern;

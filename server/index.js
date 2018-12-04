@@ -1,13 +1,16 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const axios = require('axios');
 const path = require('path');
 const Promise = require('bluebird');
+const { ObjectId } = require('mongoose').Types;
 const { API_TOKEN } = require('../database/config.js');
 const { Itinerary, Line, Direction, Pattern } = require('../database/Transit.js');
 
 const app = express();
 const PORT = 8000;
 
+app.use(bodyParser.json());
 app.use('/', express.static(path.join(__dirname, '/../client/dist')));
 
 app.get('/realtime', (req, res) => {
@@ -75,6 +78,41 @@ app.get('/lines', (req, res) => {
     if (err) console.error(err);
     const lineIds = linesRaw.map(l => l.Id).sort();
     res.send(lineIds);
+  });
+});
+
+app.get('/directions', (req, res) => {
+  Direction.find({}, (err, dirRaw) => {
+    if (err) console.error(err);
+    const directions = dirRaw.map(d => d.DirectionId).sort();
+    res.send(directions);
+  });
+});
+
+app.get('/stops/:line/:dirId', (req, res) => {
+  Pattern.find({
+    LineRef: req.params.line,
+    DirectionRef: req.params.dirId,
+  }, (err, pattRaw) => {
+    if (err) console.error(err);
+
+    pattRaw.sort((a, b) => a.StopPointInJourneyPattern.length - b.StopPointInJourneyPattern.length);
+    res.send(pattRaw[0].StopPointInJourneyPattern.map(({
+      ScheduledStopPointRef,
+      Name,
+    }) => ({
+      ScheduledStopPointRef,
+      Name,
+    })));
+  });
+});
+
+app.post('/waypoint/:itinId', (req, res) => {
+  Itinerary.update({ _id: new ObjectId(req.params.itinId) }, {
+    $push: { waypoints: req.body },
+  }, (err) => {
+    if (err) console.error(err);
+    console.log('Added new waypoint.');
   });
 });
 
