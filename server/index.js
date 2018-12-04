@@ -24,9 +24,16 @@ app.get('/realtime', (req, res) => {
     Promise.all(stopIds.map(id => axios.get(`http://api.511.org/transit/StopMonitoring?format=json&api_key=${API_TOKEN}&agency=SF&stopCode=${id}`)))
       .then((allRes) => {
         const arrivals = [];
+        let maxResponseTime = '';
 
         allRes.forEach((response) => {
-          JSON.parse(response.data.slice(1))
+          const parsedResponse = JSON.parse(response.data.slice(1));
+          
+          if (parsedResponse.ServiceDelivery.ResponseTimestamp > maxResponseTime) {
+            maxResponseTime = parsedResponse.ServiceDelivery.ResponseTimestamp;
+          }
+
+          parsedResponse
             .ServiceDelivery
             .StopMonitoringDelivery
             .MonitoredStopVisit
@@ -55,7 +62,7 @@ app.get('/realtime', (req, res) => {
           });
         });
 
-        res.send(itins);
+        res.send({ maxResponseTime, itins });
       });
   });
 });
@@ -69,7 +76,8 @@ app.get('/test', (req, res) => {
         wp.arrivalTimes = [];
       });
     });
-    res.send(itins);
+
+    res.send({ maxResponseTime: '2018-01-01T00:00Z', itins });
   });
 });
 
@@ -108,101 +116,57 @@ app.get('/stops/:line/:dirId', (req, res) => {
 });
 
 app.post('/waypoint/:itinId', (req, res) => {
-  Itinerary.update({ _id: new ObjectId(req.params.itinId) }, {
+  //.update() doesn't accept docs in the callback
+  Itinerary.findOneAndUpdate({ _id: new ObjectId(req.params.itinId) }, {
     $push: { waypoints: req.body },
-  }, (err) => {
+  }, (err, docs) => {
     if (err) console.error(err);
     console.log('Added new waypoint.');
+
+    Itinerary.find({}, (err, itinsRaw) => {
+      if (err) console.error(err);
+      res.send(itinsRaw);
+    });
+  });
+});
+
+app.delete('/waypoint/:itinId/:stopId', (req, res) => {
+  Itinerary.findOneAndUpdate({ _id: new ObjectId(req.params.itinId) }, {
+    $pull: { waypoints: { id: req.params.stopId } },
+  }, (err, docs) => {
+    if (err) console.error(err);
+    console.log('Waypoint deleted.');
+
+    Itinerary.find({}, (err2, itinsRaw) => {
+      if (err) console.error(err2);
+      res.send(itinsRaw);
+    });
+  });
+});
+
+app.post('/itinerary', (req, res) => {
+  Itinerary.create(req.body, (err, docs) => {
+    if (err) console.error(err);
+    console.log('Added new itinerary.');
+
+    Itinerary.find({}, (err, itinsRaw) => {
+      if (err) console.error(err);
+      res.send(itinsRaw);
+    });
+  });
+});
+
+app.delete('/itinerary/:itinId', (req, res) => {
+  Itinerary.deleteOne({ _id: new ObjectId(req.params.itinId) }, (err) => {
+    if (err) console.error(err);
+
+    Itinerary.find({}, (err2, itinsRaw) => {
+      if (err) console.error(err2);
+      res.send(itinsRaw);
+    });
   });
 });
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}.`);
 });
-
-
-
-
-
-    // stopIds.forEach((id) => {
-    //   axios.get(`http://api.511.org/transit/StopMonitoring?format=json&api_key=${API_TOKEN}&agency=SF&stopCode=${id}`)
-    //     .then((response) => {
-    //       const arrivals = [];
-
-    //       JSON.parse(response.data.slice(1))
-    //         .ServiceDelivery
-    //         .StopMonitoringDelivery
-    //         .MonitoredStopVisit
-    //         .forEach((obj) => {
-    //           arrivals.push({
-    //             LineRef: obj.MonitoredVehicleJourney.LineRef,
-    //             DirectionRef: obj.MonitoredVehicleJourney.DirectionRef,
-    //             StopPointRef: obj.MonitoredVehicleJourney.MonitoredCall.StopPointRef,
-    //             AimedArrivalTime: obj.MonitoredVehicleJourney.MonitoredCall.AimedArrivalTime,
-    //           });
-    //         });
-
-    //       console.log(arrivals);
-
-    //       // arrivals.forEach((a) => {
-    //       //   waypoints.forEach((w) => {
-    //       //     console.log(a.StopPointRef);
-    //       //     console.log(w.id);
-    //       //     console.log(a.LineRef);
-    //       //     console.log(w.line);
-    //       //     console.log(a.DirectionRef);
-    //       //     console.log(w.direction);
-    //       //     console.log('#######################');
-    //       //     if (a.StopPointRef === w.id && a.LineRef === w.line && a.DirectionRef && w.direction) {
-    //       //       const mins = Math.floor((new Date(a.AimedArrivalTime) - new Date()) / 1000 / 60);
-
-    //       //       console.log(w.arrivalTimes);
-    //       //       if (w.arrivalTimes) {
-    //       //         console.log('AAAA');
-    //       //         w.arrivalTimes.push(mins);
-    //       //         console.log(w);
-    //       //       } else {
-    //       //         console.log('BBBB');
-    //       //         w.arrivalTimes = [mins];
-    //       //         console.log(w);
-    //       //       }
-                
-    //       //       console.log(mins);
-    //       //       console.log(w);
-    //       //     }
-    //       //   });
-    //       // });
-
-    //       for (let a of arrivals) {
-    //         for (let w of waypoints) {
-    //           console.log(a.StopPointRef);
-    //           console.log(w.id);
-    //           console.log(a.LineRef);
-    //           console.log(w.line);
-    //           console.log(a.DirectionRef);
-    //           console.log(w.direction);
-    //           console.log('#######################');
-    //           if (a.StopPointRef === w.id && a.LineRef === w.line && a.DirectionRef && w.direction) {
-    //             const mins = Math.floor((new Date(a.AimedArrivalTime) - new Date()) / 1000 / 60);
-
-    //             console.log(w.arrivalTimes);
-    //             if (w.arrivalTimes) {
-    //               console.log('AAAA');
-    //               w.arrivalTimes.push(mins);
-    //               console.log(w);
-    //             } else {
-    //               console.log('BBBB');
-    //               w.arrivalTimes = [mins];
-    //               console.log(w);
-    //             }
-                
-    //             console.log(mins);
-    //             console.log(w);
-    //           }
-    //         };
-    //       };
-    //     });
-    // });
-
-    // // res.send(itins[0].waypoints[0].arrivalTimes);
-    // res.send(itins);

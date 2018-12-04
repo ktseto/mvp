@@ -18,7 +18,10 @@ class NewWaypoint extends React.Component {
 
       selectedLine: '',
       selectedDirection: '',
-      selectedStop: '',
+      selectedStop: {
+        ScheduledStopPointRef: '',
+        Name: '',
+      },
     };
     
     this.handleLines = this.handleLines.bind(this);
@@ -110,7 +113,12 @@ class NewWaypoint extends React.Component {
         this.setState({
           selectedLine: '',
           selectedDirection: '',
-          selectedStop: '',
+          selectedStop: {
+            ScheduledStopPointRef: '',
+            Name: '',
+          },
+        }, () => {
+          this.props.handleAddWaypoint(res.data);
         });
       })
       .catch((err) => {
@@ -126,11 +134,11 @@ class NewWaypoint extends React.Component {
           <option></option>
           {this.state.allLines.map(line => <option value={line} key={line}>{line}</option>)}
         </select>
-        <select className={styles.direction} onChange={this.handleDirections}>
+        <select className={styles.direction} onChange={this.handleDirections} value={this.state.selectedDirection}>
           <option></option>
           {this.state.allDirections.map(dir => <option value={dir} key={dir}>{dir}</option>)}
         </select>
-        <select className={styles.stopName} onChange={this.handleStops}>
+        <select className={styles.stopName} onChange={this.handleStops} value={this.state.selectedStop.Name}>
           <option></option>
           {this.state.availableStops.map(stop =>
             <option
