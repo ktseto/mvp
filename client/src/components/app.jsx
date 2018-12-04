@@ -16,13 +16,16 @@ class App extends React.Component {
       itineraries: [],
       lastUpdatedTime: null,
       onHomePage: true,
+      newItinName: '',
     };
 
     this.handleEditPage = this.handleEditPage.bind(this);
     this.handleBackHome = this.handleBackHome.bind(this);
+    this.handleAddItin = this.handleAddItin.bind(this);
     this.handleDeleteItin = this.handleDeleteItin.bind(this);
     this.handleDeleteWaypoint = this.handleDeleteWaypoint.bind(this);
     this.handleAddWaypoint = this.handleAddWaypoint.bind(this);
+    this.handleItinNameChange = this.handleItinNameChange.bind(this);
   }
 
   refreshData() {
@@ -59,8 +62,9 @@ class App extends React.Component {
     });
   }
 
-  handleDeleteItin(e) {
-    axios.delete(`/itinerary/${e.target.id}`)
+  handleDeleteWaypoint(e) {
+    const [itinId, stopId] = e.target.id.split('/');
+    axios.delete(`/waypoint/${itinId}/${stopId}`)
       .then((res) => {
         this.setState({
           itineraries: res.data,
@@ -68,9 +72,27 @@ class App extends React.Component {
       });
   }
 
-  handleDeleteWaypoint(e) {
-    const [itinId, stopId] = e.target.id.split('/');
-    axios.delete(`/waypoint/${itinId}/${stopId}`)
+  handleItinNameChange(e) {
+    this.setState({
+      newItinName: e.target.value,
+    });
+  }
+
+  handleAddItin(e) {
+    axios.post('/itinerary', {
+      name: this.state.newItinName,
+      waypoints: [],
+    })
+      .then((res) => {
+        this.setState({
+          itineraries: res.data,
+          newItinName: '',
+        });
+      });
+  }
+
+  handleDeleteItin(e) {
+    axios.delete(`/itinerary/${e.target.id}`)
       .then((res) => {
         this.setState({
           itineraries: res.data,
@@ -127,8 +149,8 @@ class App extends React.Component {
             </div>
           ))}
           <div>
-            New Itinerary:  <input></input>
-            <button id="addItin">Add</button>
+            New Itinerary:  <input onChange={this.handleItinNameChange}></input>
+            <button id="addItin" onClick={this.handleAddItin}>Add</button>
           </div>
           <button id="return" onClick={this.handleBackHome}>Return</button>
         </div>

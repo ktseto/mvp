@@ -122,7 +122,6 @@ app.post('/waypoint/:itinId', (req, res) => {
   });
 });
 
-
 app.delete('/waypoint/:itinId/:stopId', (req, res) => {
   Itinerary.findOneAndUpdate({ _id: new ObjectId(req.params.itinId) }, {
     $pull: { waypoints: { id: req.params.stopId } },
@@ -132,6 +131,18 @@ app.delete('/waypoint/:itinId/:stopId', (req, res) => {
 
     Itinerary.find({}, (err2, itinsRaw) => {
       if (err) console.error(err2);
+      res.send(itinsRaw);
+    });
+  });
+});
+
+app.post('/itinerary', (req, res) => {
+  Itinerary.create(req.body, (err, docs) => {
+    if (err) console.error(err);
+    console.log('Added new itinerary.');
+
+    Itinerary.find({}, (err, itinsRaw) => {
+      if (err) console.error(err);
       res.send(itinsRaw);
     });
   });
