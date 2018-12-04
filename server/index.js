@@ -27,6 +27,7 @@ app.get('/realtime', (req, res) => {
             .MonitoredStopVisit
             .forEach((obj) => {
               arrivals.push({
+                RecordedAtTime: obj.RecordedAtTime,
                 LineRef: obj.MonitoredVehicleJourney.LineRef,
                 DirectionRef: obj.MonitoredVehicleJourney.DirectionRef,
                 StopPointRef: obj.MonitoredVehicleJourney.MonitoredCall.StopPointRef,
@@ -36,14 +37,14 @@ app.get('/realtime', (req, res) => {
         });
 
         arrivals.forEach((a) => {
-          waypoints.forEach((w) => {
-            if (a.StopPointRef === w.id && a.LineRef === w.line && a.DirectionRef && w.direction) {
+          waypoints.forEach((wp) => {
+            if (a.StopPointRef === wp.id && a.LineRef === wp.line && a.DirectionRef && wp.direction) {
               const mins = Math.floor((new Date(a.AimedArrivalTime) - new Date()) / 1000 / 60);
 
-              if (w.arrivalTimes) {
-                w.arrivalTimes.push(mins);
+              if (wp.arrivalTimes) {
+                wp.arrivalTimes.push(mins);
               } else {
-                w.arrivalTimes = [mins];
+                wp.arrivalTimes = [mins];
               }
             }
           });
