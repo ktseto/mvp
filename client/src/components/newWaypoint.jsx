@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import styles from '../../dist/styles/newWaypoint.css';
 
 const directionMap = {
   'IB': 'Inbound',
@@ -120,16 +121,16 @@ class NewWaypoint extends React.Component {
 
   render() {
     return (
-      <div>
-        <select onChange={this.handleLines} value={this.state.selectedLine}>
+      <div className={styles.container}>
+        <select className={styles.line} onChange={this.handleLines} value={this.state.selectedLine}>
           <option></option>
           {this.state.allLines.map(line => <option value={line} key={line}>{line}</option>)}
         </select>
-        <select onChange={this.handleDirections}>
+        <select className={styles.direction} onChange={this.handleDirections}>
           <option></option>
           {this.state.allDirections.map(dir => <option value={dir} key={dir}>{dir}</option>)}
         </select>
-        <select onChange={this.handleStops}>
+        <select className={styles.stopName} onChange={this.handleStops}>
           <option></option>
           {this.state.availableStops.map(stop =>
             <option
@@ -138,7 +139,7 @@ class NewWaypoint extends React.Component {
               key={stop.ScheduledStopPointRef}
           >{stop.Name}</option>)}
         </select>
-        <button onClick={this.handleAdd}></button>
+        <button onClick={this.handleAdd}>Add</button>
       </div>
     );
   }

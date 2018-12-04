@@ -3,6 +3,11 @@ import axios from 'axios';
 import NewWaypoint from './newWaypoint.jsx';
 import styles from '../../dist/styles/app.css';
 
+const directionMap = {
+  Inbound: 'IB',
+  Outbound: 'OB',
+};
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -19,8 +24,8 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    // axios.get('/realtime')
-    axios.get('/test')
+    axios.get('/realtime')
+    // axios.get('/test')
       .then((res) => {
         this.setState({
           itineraries: res.data,
@@ -37,11 +42,9 @@ class App extends React.Component {
   }
 
   handleDeleteItin(e) {
-
   }
 
   handleDeleteWaypoint(e) {
-    
   }
 
   render() {
@@ -51,17 +54,21 @@ class App extends React.Component {
         this.state.onHomePage
         ?
         <div id="realTime">
-          <div id="appHeader">Best Transit App Ever</div>
-          <button id="editItin" onClick={this.handleTogglePage}>Edit Itineraries</button>
+          <div className={styles.appHeader}>Best Transit App Ever</div>
+          <div className={styles.editButtonContainer}>
+            <button onClick={this.handleTogglePage}>Edit Itineraries</button>
+          </div>
           {this.state.itineraries.map(itin => (
             <div key={itin._id}>
-              <div>Itinerary:  {itin.name}</div>
+              <div className={styles.itinHeader}>Itinerary:  {itin.name}</div>
               {itin.waypoints.map(wp => (
-                <div key={wp.id}>
-                  <div>{wp.line}</div>
-                  <div>{wp.direction}</div>
-                  <div>{wp.name}</div>
-                  <div>{`${wp.arrivalTimes.join(', ')} mins`}</div>
+                <div className={styles.waypoint} key={wp.id}>
+                  <div className={styles.line}>{wp.line}</div>
+                  <div className={styles.direction}>{directionMap[wp.direction]}</div>
+                  <div className={styles.stopName}>{wp.name}</div>
+                  <div className={styles.estimates}>
+                    {wp.arrivalTimes ? `${wp.arrivalTimes.join(', ')} mins` : ''}
+                  </div>
                 </div>
               ))}
             </div>
@@ -70,16 +77,18 @@ class App extends React.Component {
         </div>
         :
         <div id="editItin">
-          <div id="editHeader">Edit Itineraries</div>
+          <div className={styles.appHeader}>Edit Itineraries</div>
           {this.state.itineraries.map(itin => (
             <div key={itin._id}>
-              <div>Itinerary:  {itin.name}</div>
-              <button id={itin._id}>X</button>
+              <div className={styles.flexContainer}>
+                <div className={styles.itinHeader}>Itinerary:  {itin.name}</div>
+                <button className={styles.itinHeader} id={itin._id}>X</button>
+              </div>
               {itin.waypoints.map(wp => (
-                <div key={wp.id}>
-                  <div>{wp.line}</div>
-                  <div>{wp.direction}</div>
-                  <div>{wp.name}</div>
+                <div className={styles.waypoint} key={wp.id}>
+                  <div className={styles.line}>{wp.line}</div>
+                  <div className={styles.direction}>{directionMap[wp.direction]}</div>
+                  <div className={styles.stopName}>{wp.name}</div>
                   <button id={`${itin._id}/${wp.id}`}>X</button>
                 </div>
               ))}
