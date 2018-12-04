@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import NewWaypoint from './newWaypoint.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -11,22 +12,35 @@ class App extends React.Component {
       onHomePage: true,
     };
 
-    this.handleEdit = this.handleEdit.bind(this);
+    this.handleTogglePage = this.handleTogglePage.bind(this);
+    this.handleDeleteItin = this.handleDeleteItin.bind(this);
+    this.handleDeleteWaypoint = this.handleDeleteWaypoint.bind(this);
   }
 
   componentDidMount() {
     // axios.get('/realtime')
-    //   .then((res) => {
-    //     this.setState({
-    //       itineraries: res.data,
-    //     });
-    //   });
+    axios.get('/test')
+      .then((res) => {
+        this.setState({
+          itineraries: res.data,
+        });
+      });
   }
 
-  handleEdit() {
+  handleTogglePage() {
+    const { onHomePage } = this.state;
+
     this.setState({
-      onHomePage: false,
+      onHomePage: !onHomePage,
     });
+  }
+
+  handleDeleteItin(e) {
+
+  }
+
+  handleDeleteWaypoint(e) {
+    
   }
 
   render() {
@@ -37,7 +51,7 @@ class App extends React.Component {
         ?
         <div id="realTime">
           <div id="appHeader">Best Transit App Ever</div>
-          <button id="editItin" onClick={this.handleEdit}>Edit Itineraries</button>
+          <button id="editItin" onClick={this.handleTogglePage}>Edit Itineraries</button>
           {this.state.itineraries.map(itin => (
             <div key={itin._id}>
               <div>Itinerary:  {itin.name}</div>
@@ -68,9 +82,14 @@ class App extends React.Component {
                   <button id={`${itin._id}/${wp.id}`}>X</button>
                 </div>
               ))}
+              <NewWaypoint itinId={itin._id}/>
             </div>
           ))}
-          <button>Return</button>
+          <div>
+            New Itinerary:  <input></input>
+            <button id="addItin">Add</button>
+          </div>
+          <button id="return" onClick={this.handleTogglePage}>Return</button>
         </div>
       }
       </div>

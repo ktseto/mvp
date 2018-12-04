@@ -12,6 +12,8 @@ app.use('/', express.static(path.join(__dirname, '/../client/dist')));
 
 app.get('/realtime', (req, res) => {
   Itinerary.find({}, (err, itinsRaw) => {
+    if (err) console.error(err);
+
     const itins = JSON.parse(JSON.stringify(itinsRaw));
     const waypoints = itins.reduce((a, b) => a.concat(b.waypoints), []);
     const stopIds = [...(new Set(waypoints.map(w => w.id)))];
@@ -52,6 +54,27 @@ app.get('/realtime', (req, res) => {
 
         res.send(itins);
       });
+  });
+});
+
+app.get('/test', (req, res) => {
+  Itinerary.find({}, (err, itinsRaw) => {
+    if (err) console.error(err);
+    const itins = JSON.parse(JSON.stringify(itinsRaw));
+    itins.forEach((it) => {
+      it.waypoints.forEach((wp) => {
+        wp.arrivalTimes = [];
+      });
+    });
+    res.send(itins);
+  });
+});
+
+app.get('/lines', (req, res) => {
+  Line.find({}, (err, linesRaw) => {
+    if (err) console.error(err);
+    const lineIds = linesRaw.map(l => l.Id).sort();
+    res.send(lineIds);
   });
 });
 
