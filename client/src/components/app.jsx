@@ -14,7 +14,7 @@ class App extends React.Component {
 
     this.state = {
       itineraries: [],
-      lastUpdatedTime: null,
+      lastUpdatedTime: new Date('2018-01-01T00:00Z'),
       onHomePage: true,
       newItinName: '',
     };
@@ -33,7 +33,8 @@ class App extends React.Component {
     axios.get('/test')
       .then((res) => {
         this.setState({
-          itineraries: res.data,
+          itineraries: res.data.itins,
+          lastUpdatedTime: new Date(res.data.maxResponseTime),
         });
       });
   }
@@ -100,6 +101,17 @@ class App extends React.Component {
       });
   }
 
+  formatDateTime(dt) {
+    const month = dt.getMonth() + 1;
+    const day = dt.getDate();
+    const hour = String(dt.getHours() % 12).padStart(2, '0');
+    const minute = String(dt.getMinutes()).padStart(2, '0');
+    const second = String(dt.getSeconds()).padStart(2, '0');
+    const ampm = Math.floor(dt.getHours() / 12) ? 'AM' : 'PM';
+
+    return `${month}/${day} ${hour}:${minute}:${second}${ampm}`;
+  }
+
   render() {
     return (
       <div>
@@ -126,7 +138,7 @@ class App extends React.Component {
               ))}
             </div>
           ))}
-          <div id="lastUpdate">Last update: {this.state.lastUpdatedTime}</div>
+          <div id="lastUpdate">Last updated: {this.formatDateTime(this.state.lastUpdatedTime)}</div>
         </div>
         :
         <div id="editItin">

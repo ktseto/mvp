@@ -24,9 +24,16 @@ app.get('/realtime', (req, res) => {
     Promise.all(stopIds.map(id => axios.get(`http://api.511.org/transit/StopMonitoring?format=json&api_key=${API_TOKEN}&agency=SF&stopCode=${id}`)))
       .then((allRes) => {
         const arrivals = [];
+        let maxResponseTime = '';
 
         allRes.forEach((response) => {
-          JSON.parse(response.data.slice(1))
+          const parsedResponse = JSON.parse(response.data.slice(1));
+          
+          if (parsedResponse.ServiceDelivery.ResponseTimestamp > maxResponseTime) {
+            maxResponseTime = parsedResponse.ServiceDelivery.ResponseTimestamp;
+          }
+
+          parsedResponse
             .ServiceDelivery
             .StopMonitoringDelivery
             .MonitoredStopVisit
@@ -55,7 +62,7 @@ app.get('/realtime', (req, res) => {
           });
         });
 
-        res.send(itins);
+        res.send({ maxResponseTime, itins });
       });
   });
 });
@@ -69,7 +76,8 @@ app.get('/test', (req, res) => {
         wp.arrivalTimes = [];
       });
     });
-    res.send(itins);
+
+    res.send({ maxResponseTime: '2018-01-01T00:00Z', itins });
   });
 });
 
