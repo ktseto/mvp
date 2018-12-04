@@ -1,4 +1,5 @@
 ### node etc ###
+database/config.js
 
 # Logs
 logs
