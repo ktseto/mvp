@@ -1,7 +1,7 @@
 const { Itinerary } = require('./Transit.js');
 
 Itinerary.create({
-  name: 'Morning Commute',
+  name: 'Morning Commute - Regular',
   waypoints: [
     {
       id: '14853',
@@ -22,18 +22,12 @@ Itinerary.create({
 });
 
 Itinerary.create({
-  name: 'Evening Commute',
+  name: 'Morning Commute - Problems in Twin Peaks Tunnel',
   waypoints: [
     {
-      id: '16994',
-      name: 'Metro Montgomery Station/Outbound',
-      line: 'M',
-      direction: 'Outbound',
-    },
-    {
-      id: '15244',
-      name: 'Laguna Honda Blvd & Dewey Blvd',
-      line: '44',
+      id: '15122',
+      name: 'Irving St & 7th Ave',
+      line: 'N',
       direction: 'Inbound',
     },
   ],

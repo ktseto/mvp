@@ -8,7 +8,7 @@ const selectLines = ['1', '2', '38', '43', '44', 'K', 'L', 'M', 'N'];
 axios.get(`http://api.511.org/transit/lines?format=json&api_key=${API_TOKEN}&operator_id=SF`)
   .then((res) => {
     // first character is BOM
-    const parsedSelected = JSON.parse(res.data.slice(1)).map(x => x.Id in selectLines);
+    const parsedSelected = JSON.parse(res.data.slice(1)).filter(x => selectLines.includes(x.Id));
 
     Line.insertMany(parsedSelected, (err, docs) => {
       if (err) console.error(err);

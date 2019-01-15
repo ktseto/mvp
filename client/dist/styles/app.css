@@ -1,0 +1,49 @@
+body {
+  font-family: Palatino;
+  font-size: 14px;
+}
+
+.appHeader {
+  font-size: 24px;
+  text-align: center;
+}
+
+.appSubHeader {
+  font-size: 12px;
+  text-align: center;
+}
+
+.editButtonContainer {
+  text-align: right;
+}
+
+.itinHeader {
+  background-color: navy;
+  color: white;
+  text-align: center;
+}
+
+.waypoint {
+  background-color: Gainsboro;
+  display: flex;
+}
+
+.line {
+  width: 11%;
+}
+
+.direction {
+  width: 6%;
+}
+
+.stopName {
+  width: 54%;
+}
+
+.estimates {
+  width: auto;
+}
+
+.flexContainer {
+  display: flex;
+}
