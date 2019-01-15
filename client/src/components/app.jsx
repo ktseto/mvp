@@ -29,8 +29,8 @@ class App extends React.Component {
   }
 
   refreshData() {
-    // axios.get('/realtime')
-    axios.get('/test')
+    axios.get('/realtime')
+    // axios.get('/test')
       .then((res) => {
         this.setState({
           itineraries: res.data.itins,
@@ -107,7 +107,7 @@ class App extends React.Component {
     const hour = String(dt.getHours() % 12).padStart(2, '0');
     const minute = String(dt.getMinutes()).padStart(2, '0');
     const second = String(dt.getSeconds()).padStart(2, '0');
-    const ampm = Math.floor(dt.getHours() / 12) ? 'AM' : 'PM';
+    const ampm = Math.floor(dt.getHours() / 12) ? 'PM' : 'AM';
 
     return `${month}/${day} ${hour}:${minute}:${second}${ampm}`;
   }
@@ -119,7 +119,8 @@ class App extends React.Component {
         this.state.onHomePage
         ?
         <div id="realTime">
-          <div className={styles.appHeader}>Best Transit App Ever</div>
+          <div className={styles.appHeader}>MyCommute</div>
+          <div className={styles.appSubHeader}>An Ultra-Lightweight MUNI Prediction App with Highly Customizable Itineraries</div>
           <div className={styles.editButtonContainer}>
             <button onClick={this.handleEditPage}>Edit Itineraries</button>
           </div>
